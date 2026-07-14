@@ -25,6 +25,7 @@ strs[i] consists of only lowercase English letters if it is non-empty.
 可能需要兩個巢狀迴圈
 我的程式碼：
 卡住的地方：for迴圈不知道該怎麼包，可以讓if判斷a是否與b相等。重複比對時該怎麼不將重複的部分再次放入字串中，該如何比較不同的前墜
+2.卡在處理b的邊際條件不知道怎麼處裡，想到可以先判斷strs[j]的長度如果比strs[0]大，b就不會超出大小，但比strs[0]小就不知道怎麼處理
 錯誤訊息：
 希望獲得：提示*/
 class Solution {
@@ -32,17 +33,20 @@ class Solution {
         char a = '\0';
         char b ='\0';
         String prefix = "";
+        boolean same = true;
         for(int i = 0;i<strs[0].length();i++){
             for (int j = 1;j < strs.length;j++){
-                char s = prefix.charAt(i);
                 a = strs[0].charAt(i);
-                b = strs[j].charAt(i);
-                if(a == b && prefix.charAt(i) != a){
-                    prefix += a;
+                if (strs[j].length()>strs[0].length()){
+                    b = strs[j].charAt(i);
                 }
-                else if(a != b && prefix.indexOf(s) != -1){
-                    s = '\0';
+
+
+                if(a != b){
+                    same = false;
+                    return prefix;
                 }
+                prefix += strs[0].charAt(i);
             }
         }
         return prefix;
