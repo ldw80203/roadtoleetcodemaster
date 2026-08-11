@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LeetCode 101 Symmetric Tree</title>
+<style>
+body{margin:0;font-family:system-ui,"Segoe UI",sans-serif;background:#f6f7f9;color:#1f2937}
+main{max-width:1100px;margin:auto;padding:24px}
+h1{margin:0 0 6px;font-size:28px}
+p{margin:0}.sub{color:#6b7280;margin-bottom:18px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+button{padding:9px 14px;border-radius:8px;border:1px solid #d1d5db;background:white;cursor:pointer}
+button.primary{background:#2563eb;color:white;border-color:#2563eb}
+button:disabled{opacity:.45;cursor:not-allowed}
+.counter{margin-left:auto;color:#6b7280}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:white;border:1px solid #d1d5db;border-radius:12px;padding:16px}
+svg{width:100%;height:auto;display:block}
+.edge{stroke:#cbd5e1;stroke-width:3;fill:none}
+.axis{stroke:#94a3b8;stroke-dasharray:6 8}
+.compare{stroke:#2563eb;stroke-width:4;stroke-linecap:round;opacity:0}
+.compare.show{opacity:1}
+.node circle{fill:white;stroke:#cbd5e1;stroke-width:3}
+.node text{text-anchor:middle;dominant-baseline:middle;font-size:20px;font-weight:700}
+.node.active circle{fill:#dbeafe;stroke:#2563eb;stroke-width:4}
+.node.done circle{fill:#ccfbf1;stroke:#0f766e}
+pre{margin:0;background:#111827;color:#e5e7eb;border-radius:10px;padding:14px;overflow:auto;font-size:14px;line-height:1.55}
+.line{display:block;padding:2px 6px;border-radius:5px;white-space:pre}
+.line.now{background:#374151}
+.explain{margin-top:16px;min-height:90px}
+.label{display:inline-block;font-size:13px;font-weight:700;color:#2563eb;margin-bottom:6px}
+#text{font-size:17px}.formula{margin-top:8px;color:#6b7280;font-family:ui-monospace,Consolas,monospace}
+@media(max-width:800px){main{padding:16px}.grid{grid-template-columns:1fr}.counter{margin-left:0;width:100%}}
+</style>
+</head>
+<body>
+<main>
+<h1>LeetCode 101: Symmetric Tree</h1>
+<p class="sub">按下一步，看每一條代碼如何對應到樹上的比較。</p>
+
+<div class="controls">
+<button id="prev">上一步</button>
+<button id="next" class="primary">下一步</button>
+<button id="reset">重來</button>
+<span id="counter" class="counter"></span>
+</div>
+
+<div class="grid">
+<section class="card">
+<svg viewBox="0 0 560 340">
+<line class="axis" x1="280" y1="24" x2="280" y2="310"></line>
+<text x="292" y="42" fill="#6b7280" font-size="14">鏡像軸</text>
+<path class="edge" d="M280 70 L180 135"></path><path class="edge" d="M280 70 L380 135"></path>
+<path class="edge" d="M180 165 L120 245"></path><path class="edge" d="M180 165 L230 245"></path>
+<path class="edge" d="M380 165 L330 245"></path><path class="edge" d="M380 165 L440 245"></path>
+<line id="line" class="compare" x1="0" y1="0" x2="0" y2="0"></line>
+<g class="node" data-node="root" transform="translate(280 65)"><circle r="22"></circle><text>1</text></g>
+<g class="node" data-node="left" transform="translate(180 150)"><circle r="22"></circle><text>2</text></g>
+<g class="node" data-node="right" transform="translate(380 150)"><circle r="22"></circle><text>2</text></g>
+<g class="node" data-node="leftLeft" transform="translate(120 268)"><circle r="22"></circle><text>3</text></g>
+<g class="node" data-node="leftRight" transform="translate(230 268)"><circle r="22"></circle><text>4</text></g>
+<g class="node" data-node="rightLeft" transform="translate(330 268)"><circle r="22"></circle><text>4</text></g>
+<g class="node" data-node="rightRight" transform="translate(440 268)"><circle r="22"></circle><text>3</text></g>
+</svg>
+</section>
+
+<section class="card">
+<pre><code id="code"></code></pre>
+</section>
+</div>
+
+<section class="card explain">
+<span id="label" class="label"></span>
+<p id="text"></p>
+<div id="formula" class="formula"></div>
+</section>
+</main>
+
+<script>
+const code=[
+'public boolean isSymmetric(TreeNode root) {',
+'    if (root == null) return true;',
+'    return isMirror(root.left, root.right);',
+'}',
+'',
+'private boolean isMirror(TreeNode left, TreeNode right) {',
+'    if (left == null && right == null) return true;',
+'    if (left == null || right == null) return false;',
+'    if (left.val != right.val) return false;',
+'    return isMirror(left.left, right.right)',
+'        && isMirror(left.right, right.left);',
+'}'
+];
+const pos={root:[280,65],left:[180,150],right:[380,150],leftLeft:[120,268],leftRight:[230,268],rightLeft:[330,268],rightRight:[440,268]};
+const steps=[
+{line:0,label:'主方法入口',active:['root'],text:'LeetCode 呼叫這個方法，把整棵樹 root 傳進來。',formula:'目標：判斷 root 是否左右對稱'},
+{line:1,label:'空樹判斷',active:[],text:'如果 root 是 null，空樹沒有不對稱的地方，所以回傳 true。',formula:'root == null → true'},
+{line:2,label:'開始鏡像比較',active:['left','right'],pair:['left','right'],text:'真正要比的是 root 的左子樹和右子樹。',formula:'isMirror(root.left, root.right)'},
+{line:5,label:'helper 的任務',active:['left','right'],pair:['left','right'],text:'isMirror 每次只負責比較一對節點：left 和 right 是否互為鏡像。',formula:'left vs right'},
+{line:6,label:'兩邊都空',active:[],text:'兩邊都是 null，代表這一對位置都沒有節點，是對稱的。',formula:'left == null && right == null → true'},
+{line:7,label:'只有一邊空',active:['left'],text:'如果只有一邊是 null，代表結構不一樣，直接 false。',formula:'left == null || right == null → false'},
+{line:8,label:'比較目前值',active:['left','right'],pair:['left','right'],text:'兩邊都不是 null 後，才能比較 left.val 和 right.val。值不同就不是鏡像。',formula:'left.val != right.val → false'},
+{line:9,label:'比較外側',active:['leftLeft','rightRight'],done:['left','right'],pair:['leftLeft','rightRight'],text:'外側對外側：left.left 要對上 right.right。',formula:'isMirror(left.left, right.right)'},
+{line:10,label:'比較內側',active:['leftRight','rightLeft'],done:['left','right','leftLeft','rightRight'],pair:['leftRight','rightLeft'],text:'內側對內側：left.right 要對上 right.left。',formula:'isMirror(left.right, right.left)'},
+{line:9,label:'合併結果',active:['left','right'],done:['leftLeft','rightRight','leftRight','rightLeft'],pair:['left','right'],text:'外側成立，而且內側也成立，這一對才算鏡像，所以用 &&。',formula:'外側鏡像 && 內側鏡像'}
+];
+let i=0;
+const qs=s=>document.querySelector(s);
+const nodes=new Map([...document.querySelectorAll('.node')].map(n=>[n.dataset.node,n]));
+function esc(s){return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}
+function render(){
+  const s=steps[i];
+  qs('#code').innerHTML=code.map((l,idx)=>`<span class="line${idx===s.line?' now':''}">${esc(l)}</span>`).join('');
+  nodes.forEach(n=>n.classList.remove('active','done'));
+  (s.done||[]).forEach(n=>nodes.get(n).classList.add('done'));
+  s.active.forEach(n=>nodes.get(n).classList.add('active'));
+  const line=qs('#line');
+  if(s.pair){const[a,b]=s.pair;line.setAttribute('x1',pos[a][0]);line.setAttribute('y1',pos[a][1]);line.setAttribute('x2',pos[b][0]);line.setAttribute('y2',pos[b][1]);line.classList.add('show')}
+  else line.classList.remove('show');
+  qs('#label').textContent=s.label; qs('#text').textContent=s.text; qs('#formula').textContent=s.formula;
+  qs('#counter').textContent=`${i+1} / ${steps.length}`;
+  qs('#prev').disabled=i===0; qs('#next').disabled=i===steps.length-1;
+}
+qs('#prev').onclick=()=>{i=Math.max(0,i-1);render()};
+qs('#next').onclick=()=>{i=Math.min(steps.length-1,i+1);render()};
+qs('#reset').onclick=()=>{i=0;render()};
+render();
+</script>
+</body>
+</html>

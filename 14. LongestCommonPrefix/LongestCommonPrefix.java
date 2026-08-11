@@ -28,26 +28,17 @@ strs[i] consists of only lowercase English letters if it is non-empty.
 2.卡在處理b的邊際條件不知道怎麼處裡，想到可以先判斷strs[j]的長度如果比strs[0]大，b就不會超出大小，但比strs[0]小就不知道怎麼處理
 錯誤訊息：
 希望獲得：提示*/
-class Solution {
+public class LongestCommonPrefix {
     public static String longestCommonPrefix(String[] strs) {
-        char a = '\0';
-        char b ='\0';
         String prefix = "";
         boolean same = true;
         for(int i = 0;i<strs[0].length();i++){
             for (int j = 1;j < strs.length;j++){
-                a = strs[0].charAt(i);
-                if (strs[j].length()>strs[0].length()){
-                    b = strs[j].charAt(i);
-                }
-
-
-                if(a != b){
-                    same = false;
+                if (strs[j].length()<= i || strs[0].charAt(i) != strs[j].charAt(i) ){
                     return prefix;
                 }
-                prefix += strs[0].charAt(i);
             }
+            prefix += strs[0].charAt(i);
         }
         return prefix;
     }

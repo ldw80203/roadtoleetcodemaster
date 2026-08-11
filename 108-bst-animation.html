@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>108 BST Animation</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #10141c;
+      --panel: #171d29;
+      --panel-2: #202838;
+      --text: #eef3fb;
+      --muted: #aeb9cb;
+      --line: #53627b;
+      --accent: #62d6c9;
+      --accent-2: #ffbf69;
+      --danger: #ff7e88;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    main {
+      width: min(900px, 100%);
+      margin: 0 auto;
+      padding: 24px 18px 32px;
+    }
+    h1, h2, p { margin: 0; }
+    h1 { font-size: clamp(1.35rem, 3vw, 2rem); margin-bottom: 8px; }
+    h2 { font-size: 1rem; font-weight: 500; margin-bottom: 10px; }
+    .sub { color: var(--muted); margin-bottom: 18px; }
+    .toolbar, .array, .tree-wrap, .detail {
+      background: var(--panel);
+      border: 1px solid #2c374b;
+      border-radius: 14px;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    button {
+      border: 1px solid #46556f;
+      border-radius: 9px;
+      padding: 8px 12px;
+      background: var(--panel-2);
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+    }
+    button:hover:not(:disabled), button:focus-visible { border-color: var(--accent); }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    .primary { background: var(--accent); color: #0c2020; border-color: var(--accent); }
+    .counter { margin-left: auto; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .array { padding: 14px; margin-bottom: 14px; }
+    .array-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .cell {
+      min-width: 54px;
+      padding: 9px 8px;
+      border: 1px solid #46556f;
+      border-radius: 9px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      transition: border-color .2s, background .2s, transform .2s;
+    }
+    .cell.in-range { border-color: var(--accent); background: rgba(98,214,201,.12); }
+    .cell.mid { border-color: var(--accent-2); background: rgba(255,191,105,.2); transform: translateY(-3px); }
+    .cell small { display: block; color: var(--muted); font-size: .72rem; }
+    .tree-wrap { padding: 12px; overflow: hidden; }
+    svg { display: block; width: 100%; height: auto; min-height: 300px; }
+    .edge { stroke: var(--line); stroke-width: 2; opacity: .8; }
+    .node circle { fill: var(--panel-2); stroke: #667895; stroke-width: 2; transition: fill .2s, stroke .2s; }
+    .node.created circle { fill: rgba(98,214,201,.18); stroke: var(--accent); }
+    .node.current circle { fill: rgba(255,191,105,.25); stroke: var(--accent-2); stroke-width: 3; }
+    .node text { fill: var(--text); text-anchor: middle; dominant-baseline: central; font-size: 16px; font-weight: 500; }
+    .node .index { fill: var(--muted); font-size: 10px; transform: translateY(26px); }
+    .detail { margin-top: 14px; padding: 14px; display: grid; gap: 8px; }
+    .detail-line { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+    .label { color: var(--muted); min-width: 76px; }
+    code { color: var(--accent-2); }
+    .explain { color: var(--text); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (max-width: 520px) {
+      main { padding: 18px 12px 24px; }
+      .counter { width: 100%; margin-left: 0; }
+      svg { min-height: 250px; }
+      .cell { min-width: 46px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main id="bst-animation" aria-labelledby="title">
+    <h1 id="title">108：Sorted Array → Height-Balanced BST</h1>
+    <p class="sub">逐步觀察 <code>left</code>、<code>right</code>、<code>mid</code> 與遞迴建立子樹。</p>
+
+    <div class="toolbar" aria-label="動畫控制">
+      <button type="button" id="back">上一步</button>
+      <button type="button" id="next" class="primary">下一步</button>
+      <button type="button" id="auto">自動播放</button>
+      <button type="button" id="reset">重設</button>
+      <span class="counter" id="counter" aria-live="polite"></span>
+    </div>
+
+    <section class="array" aria-labelledby="array-title">
+      <h2 id="array-title">目前陣列範圍</h2>
+      <div class="array-row" id="array-row"></div>
+    </section>
+
+    <section class="tree-wrap" aria-labelledby="tree-title">
+      <h2 id="tree-title">正在建立的樹</h2>
+      <svg id="tree" viewBox="0 0 800 285" role="img" aria-labelledby="tree-title tree-desc">
+        <desc id="tree-desc">動畫顯示由排序陣列建立高度平衡二元搜尋樹的過程。</desc>
+        <g id="edges"></g>
+        <g id="nodes"></g>
+      </svg>
+    </section>
+
+    <section class="detail" aria-live="polite">
+      <div class="detail-line"><span class="label">目前動作</span><span id="action" class="explain"></span></div>
+      <div class="detail-line"><span class="label">範圍</span><code id="range"></code></div>
+      <div class="detail-line"><span class="label">程式位置</span><code id="code-line"></code></div>
+    </section>
+  </main>
+
+  <script>
+    const nums = [-10, -3, 0, 5, 9];
+    const root = document.getElementById("bst-animation");
+    const arrayRow = root.querySelector("#array-row");
+    const edgesGroup = root.querySelector("#edges");
+    const nodesGroup = root.querySelector("#nodes");
+    const action = root.querySelector("#action");
+    const range = root.querySelector("#range");
+    const codeLine = root.querySelector("#code-line");
+    const counter = root.querySelector("#counter");
+    const backButton = root.querySelector("#back");
+    const nextButton = root.querySelector("#next");
+    const autoButton = root.querySelector("#auto");
+    const resetButton = root.querySelector("#reset");
+
+    const events = [];
+    const nodes = [];
+    let nextId = 1;
+
+    function makeEvents(left, right, depth, slot, parentId) {
+      events.push({ kind: "enter", left, right, depth, slot, parentId });
+      if (left > right) {
+        events.push({ kind: "null", left, right, depth, slot, parentId });
+        return null;
+      }
+
+      const mid = Math.floor((left + right) / 2);
+      const node = { id: nextId++, value: nums[mid], index: mid, depth, slot, parentId, createStep: events.length };
+      nodes.push(node);
+      events.push({ kind: "create", left, right, mid, depth, slot, parentId, nodeId: node.id });
+      node.left = makeEvents(left, mid - 1, depth + 1, slot * 2, node.id);
+      node.right = makeEvents(mid + 1, right, depth + 1, slot * 2 + 1, node.id);
+      events.push({ kind: "return", left, right, mid, depth, slot, parentId, nodeId: node.id });
+      return node;
+    }
+
+    makeEvents(0, nums.length - 1, 0, 0, null);
+
+    function xPosition(node) {
+      return ((node.slot + 0.5) / Math.pow(2, node.depth)) * 800;
+    }
+
+    function yPosition(node) {
+      return 40 + node.depth * 72;
+    }
+
+    function renderArray(current) {
+      arrayRow.innerHTML = "";
+      nums.forEach((value, index) => {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        if (current.left <= index && index <= current.right) cell.classList.add("in-range");
+        if (current.mid === index) cell.classList.add("mid");
+        cell.innerHTML = `<small>index ${index}</small>${value}`;
+        arrayRow.appendChild(cell);
+      });
+    }
+
+    function renderTree(step, current) {
+      const created = new Set(nodes.filter(node => node.createStep <= step).map(node => node.id));
+      const currentId = current.nodeId || null;
+      edgesGroup.innerHTML = "";
+      nodesGroup.innerHTML = "";
+
+      nodes.forEach(node => {
+        if (!created.has(node.id)) return;
+        if (node.parentId && created.has(node.parentId)) {
+          const parent = nodes.find(item => item.id === node.parentId);
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          line.setAttribute("x1", xPosition(parent));
+          line.setAttribute("y1", yPosition(parent) + 20);
+          line.setAttribute("x2", xPosition(node));
+          line.setAttribute("y2", yPosition(node) - 20);
+          line.setAttribute("class", "edge");
+          edgesGroup.appendChild(line);
+        }
+      });
+
+      nodes.forEach(node => {
+        if (!created.has(node.id)) return;
+        const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        group.setAttribute("class", `node created${node.id === currentId ? " current" : ""}`);
+        group.setAttribute("transform", `translate(${xPosition(node)} ${yPosition(node)})`);
+        group.innerHTML = `<circle r="20"></circle><text>${node.value}</text><text class="index">i=${node.index}</text>`;
+        nodesGroup.appendChild(group);
+      });
+    }
+
+    function explain(current) {
+      if (current.kind === "enter") {
+        action.textContent = current.left > current.right ? "檢查空範圍" : "進入這段陣列";
+        codeLine.textContent = "build(nums, left, right)";
+      } else if (current.kind === "null") {
+        action.textContent = "left > right，沒有元素，回傳 null";
+        codeLine.textContent = "if (left > right) return null;";
+      } else if (current.kind === "create") {
+        action.textContent = `選 nums[${current.mid}] = ${nums[current.mid]} 建立節點`;
+        codeLine.textContent = "mid = (left + right) / 2;  new TreeNode(nums[mid]);";
+      } else {
+        action.textContent = "左右子樹完成，回傳目前 root";
+        codeLine.textContent = "return root;";
+      }
+      range.textContent = `[${current.left}, ${current.right}]`;
+    }
+
+    let step = 0;
+    let timer = null;
+
+    function render() {
+      const current = events[step];
+      renderArray(current);
+      renderTree(step, current);
+      explain(current);
+      counter.textContent = `步驟 ${step + 1} / ${events.length}`;
+      backButton.disabled = step === 0;
+      nextButton.disabled = step === events.length - 1;
+    }
+
+    function stopAuto() {
+      if (timer !== null) {
+        clearInterval(timer);
+        timer = null;
+      }
+      autoButton.textContent = "自動播放";
+    }
+
+    nextButton.addEventListener("click", () => {
+      stopAuto();
+      if (step < events.length - 1) { step += 1; render(); }
+    });
+    backButton.addEventListener("click", () => {
+      stopAuto();
+      if (step > 0) { step -= 1; render(); }
+    });
+    resetButton.addEventListener("click", () => {
+      stopAuto();
+      step = 0;
+      render();
+    });
+    autoButton.addEventListener("click", () => {
+      if (timer !== null) { stopAuto(); return; }
+      autoButton.textContent = "停止播放";
+      timer = setInterval(() => {
+        if (step >= events.length - 1) { stopAuto(); return; }
+        step += 1;
+        render();
+      }, 900);
+    });
+
+    render();
+  </script>
+</body>
+</html>
