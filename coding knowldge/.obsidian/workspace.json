@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "DEV_LOG.md.md",
+                "file": "06_Dummy 與 Current 指標.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "DEV_LOG.md"
+              "title": "06_Dummy 與 Current 指標"
             }
           }
         ],
@@ -61,7 +61,7 @@
                 "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
-              "title": "檔案瀏覽器"
+              "title": "Files"
             }
           },
           {
@@ -191,22 +191,26 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:開啟快速切換": false,
-      "graph:查看關聯圖": false,
-      "canvas:建立新畫布": false,
-      "daily-notes:開啟今天的每日筆記": false,
-      "templates:插入模板": false,
-      "command-palette:開啟命令面板": false,
-      "bases:建立新的 base": false
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
     }
   },
   "active": "05799a0fa949577f",
   "lastOpenFiles": [
-    "LEARNING_RULES.md",
     "13_Java 開發環境地圖.md",
+    "期中筆記.md",
+    "歡迎.md",
     "DEV_LOG.md.md",
-    "未命名",
     "LOG.md",
+    "LEARNING_RULES.md",
+    "10_Binary Tree 題目原則.md",
+    "11_public private static class.md",
+    "未命名",
     "13_Java 開發環境地圖.md.tmp.29632.a807981996a6",
     "LOG.md.tmp.12340.a86e2153dd6b",
     "LEARNING_RULES.md.tmp.12340.320675583f7b",
@@ -217,10 +221,6 @@
     "LOG.md.tmp.32140.88baeb1bc06e",
     "LOG.md.tmp.660.af4c0d3c97cd",
     "LOG.md.tmp.28020.9643aa77ed08",
-    "歡迎.md",
-    "11_public private static class.md",
-    "期中筆記.md",
-    "10_Binary Tree 題目原則.md",
     "00_Index.md",
     "01_刷題流程與卡住規則.md",
     "09_常見錯誤清單.md",

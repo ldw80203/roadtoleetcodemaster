@@ -1,7 +1,7 @@
 /*
- * @lc app=leetcode id=206 lang=java
+ * @lc app=leetcode id=143 lang=java
  *
- * [206] Reverse Linked List
+ * [143] Reorder List
  */
 
 // @lc code=start
@@ -16,10 +16,7 @@
  * }
  */
 class Solution {
-    public ListNode reverseList(ListNode head) {
-        ListNode dummy = new ListNode();
-        ListNode cur = dummy;
-        cur.next = head;
+    public void reorderList(ListNode head) {
         
     }
 }

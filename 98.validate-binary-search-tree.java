@@ -30,17 +30,20 @@
    用&&判斷兩邊是否都有效，都有效的話再判斷右節點是否大於root以及左節點小於root*/
 class Solution {
     public boolean isValidBST(TreeNode root) {
-        
-        return helper(root, Long.MAX_VALUE, Long.MIN_VALUE);
-    }
-    private  boolean helper(TreeNode root,long  max,long  min){
         if(root == null){
             return true;
         }
-        if(root.val < max && root.val > min){
-            return helper(root.right, max,root.val)&&helper(root.left,root.val,min);
-        }   
-        return false;
+        return vaild(root,Long.MIN_VALUE,Long.MAX_VALUE);
+
+    }
+    private boolena vlaid(TreeNode root,long min,long max){
+        if(root == null){
+            return true;
+        }
+        if(!(root.val > min && root.val < max)){
+            return false;
+        }
+        return valid(root.left,min,node.val) && valid(root.right,root.val,max);
     }
 }
 // @lc code=end

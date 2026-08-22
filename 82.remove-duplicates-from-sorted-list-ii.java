@@ -1,7 +1,7 @@
 /*
- * @lc app=leetcode id=206 lang=java
+ * @lc app=leetcode id=82 lang=java
  *
- * [206] Reverse Linked List
+ * [82] Remove Duplicates from Sorted List II
  */
 
 // @lc code=start
@@ -16,10 +16,7 @@
  * }
  */
 class Solution {
-    public ListNode reverseList(ListNode head) {
-        ListNode dummy = new ListNode();
-        ListNode cur = dummy;
-        cur.next = head;
+    public ListNode deleteDuplicates(ListNode head) {
         
     }
 }
